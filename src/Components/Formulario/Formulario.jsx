@@ -1,17 +1,29 @@
-import { Box, Button, Card, CardBody, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input } from "@chakra-ui/react"
-
+import { Box, Button, Card, CardBody, Checkbox, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Icon, Input, InputGroup, InputRightElement, Link } from "@chakra-ui/react";
+import {motion} from 'framer-motion';
 import {Formik} from 'formik';
-import { ref,number, object, string} from 'yup';
+import { ref, object, string, boolean} from 'yup';
+import { useState } from "react";
+import { FaRegEye } from 'react-icons/fa6';
+import { IoEye,IoEyeOff  } from "react-icons/io5";
+
 
 // valores de los input del formulario
 const Formulario = () => {
+
+  const [show,setShow] = useState(false);
+  const mostrarPass = () => setShow(!show);
+
+  const [showConfirm,setShowConfirm] = useState(false);
+  const mostrarConfirmPass = () => setShowConfirm(!showConfirm);
+
   const formValues = {
     nombre:'',
     apellido:'',
     email:'',
     tel:'',
     pass:'',
-    confPass:''
+    confPass:'',
+    toc:false
   }
 
   // validacion de cambios manual
@@ -37,19 +49,20 @@ const Formulario = () => {
 
   // validacion con YUP mediante schemas
   const registroSchema = object({
-    nombre: string().trim().required('Por favor ingrese su nombre'),
-    apellido: string().required('Por favor ingrese su apellido'),
-    email: string().email('Formato de correo no valido').required('Por favor ingrese su correo'),
-    tel: number().typeError('Número no valido').required('Por favor ingrese su teléfono'),
+    nombre: string().trim().matches(/^[a-zA-Z]{2,}/,'Por favor ingrese al menos 2 letras').required('Por favor ingrese su nombre'),
+    apellido: string().trim().matches(/^[a-zA-Z]{2,}/,'Por favor ingrese al menos 2 letras').required('Por favor ingrese su apellido'),
+    email: string().trim().lowercase().matches(/^[a-z]\S{2,}@\S{2,}\.\S{2,}$/,'Formato de correo no valido').required('Por favor ingrese su correo'),
+    tel: string().trim().matches(/^\d{10}$/,'Ingrese código sin 0 y número sin 15').required('Por favor ingrese su teléfono'),
     pass: string().min(8,'La contraseña debe tener al menos 8 caracteres').required('Por favor ingrese una contraseña'),
-    confPass: string().oneOf([ref('pass')],'Las contraseñas son distintas').required('Por favor ingrese nuevamente la contraseña')
+    confPass: string().oneOf([ref('pass')],'Las contraseñas son distintas').required('Por favor ingrese nuevamente la contraseña'),
+    toc: boolean().oneOf([true], "Debe leer y aceptar los términos y condiciones")
   })
 
   return(
     <>
     <Card boxShadow='dark-lg' maxW='md' mx='auto'>
       <CardBody>
-        <Heading textAlign='center'>Formulario de registro</Heading>
+        <Heading textAlign='center' as='h3' mb={3} size='lg'>Formulario de registro</Heading>
 
         <Formik initialValues={formValues}
                 // validate={formValidate}
@@ -60,124 +73,109 @@ const Formulario = () => {
             <form onSubmit={handleSubmit} noValidate>
 
               {/* NOMBRE */}
-              <FormControl isRequired isInvalid={errors.nombre && touched.nombre} mb={3}> 
-              <Box display='flex' alignItems='center' justifyContent='space-between'>
-                <FormLabel mb='0'>Nombre</FormLabel>
-                  <FormErrorMessage>{errors.nombre}</FormErrorMessage>
-                </Box>
+              <FormControl isRequired isInvalid={errors.nombre && touched.nombre} mb={6}> 
+                <FormLabel mb={0}>Nombre</FormLabel>
                 <Input type="text" name="nombre" 
                         focusBorderColor='blue.200'
                         placeholder="Ingrese su nombre"
                         onChange={handleChange} onBlur={handleBlur} 
                         value={values.nombre} />
+                        <FormErrorMessage mt={0} position='absolute'>{errors.nombre}</FormErrorMessage>
               </FormControl>
 
               {/* APELLIDO */}
-              <FormControl isRequired isInvalid={errors.apellido && touched.apellido} mb={3}>
-                <Box display='flex' alignItems='center' justifyContent='space-between'>
-                <FormLabel mb='0'>Apellido</FormLabel>
-                  <FormErrorMessage>{errors.apellido}</FormErrorMessage>
-                </Box>
+              <FormControl isRequired isInvalid={errors.apellido && touched.apellido} mb={6}>
+                <FormLabel mb={0}>Apellido</FormLabel>
                 <Input type="text" name="apellido" 
                         focusBorderColor='blue.200'
                         placeholder="Ingrese su apellido"
                         onChange={handleChange} onBlur={handleBlur} 
                         value={values.apellido}/>
-                
+                <FormErrorMessage mt={0} position='absolute'>{errors.apellido}</FormErrorMessage>
               </FormControl>
 
               {/* EMAIL */}
-              <FormControl isInvalid={errors.email && touched.email} mb={3}>
-                <FormLabel>Correo</FormLabel>
+              <FormControl isRequired isInvalid={errors.email && touched.email} mb={6}>
+                <FormLabel mb={0}>Correo</FormLabel>
                 <Input type="email" name="email" 
                         focusBorderColor='blue.200'
                         placeholder="Ingrese su correo"
                         onChange={handleChange} onBlur={handleBlur} 
                         value={values.email} />
-                <FormErrorMessage>{errors.email}</FormErrorMessage>
+                <FormErrorMessage mt={0} position='absolute'>{errors.email}</FormErrorMessage>
               </FormControl>
 
               {/* TELEFONO */}
-              <FormControl isInvalid={errors.tel && touched.tel} mb={3}>
-                <FormLabel>Teléfono</FormLabel>
-                <Input type="tel" name="tel" 
-                      focusBorderColor='blue.200'
-                      placeholder="Ingrese su teléfono"
-                      onChange={handleChange} onBlur={handleBlur} 
-                      value={values.tel}/>
-                <FormErrorMessage>{errors.tel}</FormErrorMessage>
+              <FormControl isRequired isInvalid={errors.tel && touched.tel} mb={6}>
+                <FormLabel mb={0}>Teléfono</FormLabel>
+                  <Input type="tel" name="tel" 
+                        focusBorderColor='blue.200'
+                        placeholder="Teléfono"
+                        onChange={handleChange} onBlur={handleBlur} 
+                        value={values.tel}/>
+                <FormErrorMessage mt={0} position='absolute'>{errors.tel}</FormErrorMessage>
               </FormControl>
 
               {/* PASSWORD */}
-              <FormControl isInvalid={errors.pass && touched.pass} mb={3}>
-                <FormLabel>Contraseña</FormLabel>
-                <Input type="password" name="pass" 
+              <FormControl isRequired isInvalid={errors.pass && touched.pass} mb={6}>
+                <FormLabel mb={0}>Contraseña</FormLabel>
+                <InputGroup>
+                  <Input type={(show) ? 'text' : 'password'} name="pass" 
                         focusBorderColor='blue.200'
                         placeholder="Ingrese una contraseña"
                         onChange={handleChange} onBlur={handleBlur} 
                         value={values.pass}/>
-                <FormHelperText>We'll never share your email.</FormHelperText>
-                <FormErrorMessage>{errors.pass}</FormErrorMessage>
+                  <InputRightElement>
+                    <Button onClick={mostrarPass} bg='transparent' _hover={{ bg:'transparent' }} tabIndex='-1'>
+                      <Icon boxSize={8} p={2} as={(!show) ? IoEye : IoEyeOff } />
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+
+                
+                <FormErrorMessage mt={0} position='absolute'>{errors.pass}</FormErrorMessage>
               </FormControl>
 
               {/* CONFPASSWORD */}
-              <FormControl isInvalid={errors.confPass && touched.confPass} mb={3}>
-                <FormLabel>Confirmar contraseña</FormLabel>
-                <Input type="password" name="confPass" 
+              <FormControl isRequired isInvalid={errors.confPass && touched.confPass} mb={6}>
+                <FormLabel mb={0}>Confirmar contraseña</FormLabel>
+                <InputGroup>
+                  <Input type={(showConfirm) ? 'text' : 'password'} name="confPass" 
                         focusBorderColor='blue.200'
                         placeholder="Ingrese nuevamente la contraseña"
                         onChange={handleChange} onBlur={handleBlur} 
                         value={values.confPass}/>
-                <FormErrorMessage>{errors.confPass}</FormErrorMessage>
+                  <InputRightElement>
+                    <Button onClick={mostrarConfirmPass} bg='transparent' _hover={{ bg:'transparent' }} tabIndex='-1'>
+                      <Icon boxSize={8} p={2} as={(!showConfirm) ? IoEye : IoEyeOff } />
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage mt={0} position='absolute'>{errors.confPass}</FormErrorMessage>
+              </FormControl>
+              {/* TERMINOS */}
+              
+              <FormControl isInvalid={errors.toc && touched.toc} mb={6}>
+                <Checkbox name="toc"
+                        onChange={handleChange} value={values.toc}>
+                  He leido y acepto los <Link>términos y condiciones</Link>
+                </Checkbox>
+                {/* <FormErrorMessage mt={0} position='absolute'>{errors.toc}</FormErrorMessage> */}
               </FormControl>
 
-              <Button type='submit' isLoading={isSubmitting}
-                      loadingText='Submitting'>Aceptar</Button>
+              <Box display='flex' justifyContent='center'>
+                <motion.div whileHover={{scale:1.1}} whileTap={{scale:0.9}}>
+                  <Button type='submit' isLoading={isSubmitting} size='lg' 
+                          bg='#112132' color='#aaccee'
+                          _hover={{ bg:'#aaccee', color:'#112132'}}
+                          loadingText='Submitting'>Crear cuenta</Button>
+
+                </motion.div>
+              </Box>
 
             </form>
           )}
         </Formik>
-
-
-        {/* <form>
-          
-          <FormControl isInvalid={true} mb={3}> 
-            <FormLabel>Nombre</FormLabel>
-            <Input type="text" _focusVisible={{borderColor:'#c3e2f4'}}/>
-            <FormErrorMessage>Email is required.</FormErrorMessage>
-          </FormControl>
-
-          <FormControl mb={3}>
-            <FormLabel>Apellido</FormLabel>
-            <Input type="text"/>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Correo</FormLabel>
-            <Input type="email"/>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Teléfono</FormLabel>
-            <Input type="number"/>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Contraseña</FormLabel>
-            <Input type="password"/>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Confirmar contraseña</FormLabel>
-            <Input type="password"/>
-          </FormControl>
-
-          <Button
-            isLoading={false}
-            loadingText='Submitting'
-          >Aceptar</Button>
-        </form> */}
-
       </CardBody>
     </Card>
     </>
