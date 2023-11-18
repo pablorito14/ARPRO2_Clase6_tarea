@@ -58,8 +58,8 @@ const Formulario = () => {
   //   apellido:'ritp',
   //   email:'pablo@pablo.com',
   //   tel:'3517543211',
-  //   pass:'12345678',
-  //   confPass:'12345678',
+  //   pass:'12345678a',
+  //   confPass:'12345678a',
   //   toc:true
   // }
 
@@ -104,20 +104,25 @@ const Formulario = () => {
             justifyContent='center'
             textAlign='center'
             rounded='md'
-            
           >
             <AlertIcon boxSize='40px' mr={0} />
             <AlertTitle mt={4} mb={1} fontSize='lg'>
               Registro completado
             </AlertTitle>
             <AlertDescription maxWidth='md'>
-              <Text as='strong'>{values.nombre}</Text> le hemos enviado un email a <Text as='strong'>{values.email}</Text> para confirmar su cuenta. Recuerde revisar la carpeta de SPAM o Correo no deseado en caso de no recibirlo.
+              <Text>
+                <Text as='strong'>{values.nombre}</Text> le hemos enviado un email a <Text as='strong'>{values.email}</Text> para confirmar su cuenta. Recuerde revisar la carpeta de SPAM o Correo no deseado en caso de no recibirlo.
+              </Text>
+              
+                  <Heading fontSize='md' mt={3}>IMPORTANTE</Heading>
+                  <Text>Solo con el fin de mostrar los datos del formulario para la presentación de la tarea, el objeto se muestra en un console.log().</Text>
             </AlertDescription>
             <Flex mt={2}>
               <Button colorScheme="green" onClick={() => {
                   setSubmitting(false);
                   toast.closeAll();
                   resetForm({values:formInitialValues})
+
                 }}>Aceptar</Button>
 
             </Flex>
@@ -128,12 +133,15 @@ const Formulario = () => {
   }
 
   // validacion con YUP mediante schemas
+  const passPattern = /^(?=.*[a-zA-Z])(?=.*\d)\S+$/;
+  const emailBasicPatter = /^[a-z]\S{2,}@\S{2,}\.\S{2,}$/;
+
   const registroSchema = object({
-    nombre: string().trim().matches(/^[a-zA-Z]{2,}/,'Por favor ingrese al menos 2 letras').required('Por favor ingrese su nombre'),
-    apellido: string().trim().matches(/^[a-zA-Z]{2,}/,'Por favor ingrese al menos 2 letras').required('Por favor ingrese su apellido'),
-    email: string().trim().lowercase().matches(/^[a-z]\S{2,}@\S{2,}\.\S{2,}$/,'Formato de correo no valido').required('Por favor ingrese su correo'),
+    nombre: string().trim().matches(/^[a-zA-Z]{2,}/,'Por favor ingrese solo letras (al menos 2)').required('Por favor ingrese su nombre'),
+    apellido: string().trim().matches(/^[a-zA-Z]{2,}/,'Por favor ingrese solo letras (al menos 2)').required('Por favor ingrese su apellido'),
+    email: string().trim().lowercase().matches(emailBasicPatter,'Por favor ingrese un correo valido').required('Por favor ingrese su correo'),
     tel: string().trim().matches(/^\d{10}$/,'Ingrese código sin 0 y número sin 15').required('Por favor ingrese su teléfono'),
-    pass: string().min(8,'La contraseña debe tener al menos 8 caracteres').required('Por favor ingrese una contraseña'),
+    pass: string().matches(passPattern,'Por favor ingrese al menos una letra y un número').min(8,'Por favor ingrese al menos 8 caracteres').required('Por favor ingrese una contraseña'),
     confPass: string().oneOf([ref('pass')],'Las contraseñas son distintas').required('Por favor ingrese nuevamente la contraseña'),
     toc: boolean().oneOf([true], "Debe leer y aceptar los términos y condiciones")
   })
