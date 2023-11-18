@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Card, CardBody, Checkbox, 
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button,Checkbox, 
           Flex, FormControl, Heading, Link, Modal, ModalBody, ModalCloseButton, ModalContent, 
           ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure, useToast } from "@chakra-ui/react";
 import {motion} from 'framer-motion';
@@ -22,7 +22,9 @@ const Lorem = ({count}) => {
 const TerminosModal = ({isOpen,onClose}) => {
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} scrollBehavior='inside'>
+    
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}
+          isCentered scrollBehavior='inside' motionPreset='scale'>
       <ModalOverlay />
         <ModalContent>
           <ModalHeader pb={0}>Términos y condiciones</ModalHeader>
@@ -82,28 +84,34 @@ const Formulario = () => {
         position: 'top',
         duration: null,
         render: () => (
-          <Alert status='success' variant='subtle' flexDirection='column' alignItems='center'
-                justifyContent='center' textAlign='center' rounded='md'>
-            <AlertIcon boxSize='40px' mr={0} />
-            <AlertTitle mt={4} mb={1} fontSize='lg'>
-              Registro completado
-            </AlertTitle>
-            <AlertDescription maxWidth='md'>
-              <Text>
-                <Text as='strong'>{values.nombre}</Text> le hemos enviado un email a <Text as='strong'>{values.email}</Text> para confirmar su cuenta. Recuerde revisar la carpeta de SPAM o Correo no deseado en caso de no recibirlo.
-              </Text>
-              <Heading fontSize='md' mt={3}>IMPORTANTE</Heading>
-              <Text>Solo con el fin de mostrar los datos del formulario para la presentación de la tarea, el objeto se muestra en un console.log().</Text>
-            </AlertDescription>
-            <Flex mt={2}>
-              <Button colorScheme="green" onClick={() => {
-                  setSubmitting(false);
-                  toast.closeAll();
-                  resetForm({values:formInitialValues})
-                }}>Aceptar</Button>
+          <motion.div 
+              initial={{scale: 0.8}} 
+              transition={{type: 'spring',damping: 8}} 
+              animate={{scale:1}}
+              >
+            <Alert status='success' variant='subtle' flexDirection='column' alignItems='center'
+                  justifyContent='center' textAlign='center' rounded='md'>
+              <AlertIcon boxSize='40px' mr={0} />
+              <AlertTitle mt={4} mb={1} fontSize='lg'>
+                Registro completado
+              </AlertTitle>
+              <AlertDescription maxWidth='md'>
+                <Text>
+                  <Text as='strong'>{values.nombre}</Text> le hemos enviado un email a <Text as='strong'>{values.email}</Text> para confirmar su cuenta. Recuerde revisar la carpeta de SPAM o Correo no deseado en caso de no recibirlo.
+                </Text>
+                <Heading fontSize='md' mt={3}>IMPORTANTE</Heading>
+                <Text>Solo con el fin de mostrar los datos del formulario para la presentación de la tarea, el objeto se muestra en un console.log().</Text>
+              </AlertDescription>
+              <Flex mt={2}>
+                <Button colorScheme="green" onClick={() => {
+                    setSubmitting(false);
+                    toast.closeAll();
+                    resetForm({values:formInitialValues})
+                  }}>Aceptar</Button>
 
-            </Flex>
-          </Alert>
+              </Flex>
+            </Alert>
+          </motion.div>
         ),
       })
     }, 400);
@@ -139,80 +147,74 @@ const Formulario = () => {
 
   return(
     <>
-    <Card boxShadow='dark-lg' maxW='md' mx='auto'>
-      <CardBody>
-        <Heading textAlign='center' as='h3' mb={3} size='lg'>Formulario de registro</Heading>
+      <Formik initialValues={formInitialValues}
+              // validate={formValidate}
+              validationSchema={registroSchema}
+              onSubmit={formSubmit}>
+        {/* el formulario se va a generar a partir de una funcion, donde values, errors, etc son props, nombres definidos por Formik y que NO SE DEBEN CAMBIAR */}
+        {({values,errors,touched,handleChange,handleBlur,handleSubmit,isSubmitting}) => (
+          <form onSubmit={handleSubmit} noValidate>
 
-        <Formik initialValues={formInitialValues}
-                // validate={formValidate}
-                validationSchema={registroSchema}
-                onSubmit={formSubmit}>
-          {/* el formulario se va a generar a partir de una funcion, donde values, errors, etc son props, nombres definidos por Formik y que NO SE DEBEN CAMBIAR */}
-          {({values,errors,touched,handleChange,handleBlur,handleSubmit,isSubmitting}) => (
-            <form onSubmit={handleSubmit} noValidate>
+            {/* NOMBRE */}
+            <CustomFormControl error={errors.nombre} touched={touched.nombre} 
+                              label='Nombre' type='text' name='nombre'
+                              placeholder='Ingrese su nombre' handleChange={handleChange}
+                              handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.nombre}/>
 
-              {/* NOMBRE */}
-              <CustomFormControl error={errors.nombre} touched={touched.nombre} 
-                                label='Nombre' type='text' name='nombre'
-                                placeholder='Ingrese su nombre' handleChange={handleChange}
-                                handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.nombre}/>
+            {/* APELLIDO */}
+            <CustomFormControl error={errors.apellido} touched={touched.apellido} 
+                              label='Apellido' type='text' name='apellido'
+                              placeholder='Ingrese su apellido' handleChange={handleChange}
+                              handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.apellido}/>
 
-              {/* APELLIDO */}
-              <CustomFormControl error={errors.apellido} touched={touched.apellido} 
-                                label='Apellido' type='text' name='apellido'
-                                placeholder='Ingrese su apellido' handleChange={handleChange}
-                                handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.apellido}/>
+            {/* EMAIL */}
+            <CustomFormControl error={errors.email} touched={touched.email} 
+                              label='Correo' type='email' name='email'
+                              placeholder='Ingrese su correo' handleChange={handleChange}
+                              handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.email}/>
 
-              {/* EMAIL */}
-              <CustomFormControl error={errors.email} touched={touched.email} 
-                                label='Correo' type='email' name='email'
-                                placeholder='Ingrese su correo' handleChange={handleChange}
-                                handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.email}/>
+            {/* TELEFONO */}
+            <CustomFormControl error={errors.tel} touched={touched.tel} 
+                              label='Teléfono' type='tel' name='tel'
+                              placeholder='Ingrese su teléfono' handleChange={handleChange}
+                              handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.tel}/>
 
-              {/* TELEFONO */}
-              <CustomFormControl error={errors.tel} touched={touched.tel} 
-                                label='Teléfono' type='tel' name='tel'
-                                placeholder='Ingrese su teléfono' handleChange={handleChange}
-                                handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.tel}/>
+            {/* PASSWORD */}
+            <CustomFormControlPass error={errors.pass} touched={touched.pass} 
+                                  label='Contraseña' name='pass'
+                                  placeholder='Ingrese una contraseña' handleChange={handleChange}
+                                  handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.pass}/>
 
-              {/* PASSWORD */}
-              <CustomFormControlPass error={errors.pass} touched={touched.pass} 
-                                    label='Contraseña' name='pass'
-                                    placeholder='Ingrese una contraseña' handleChange={handleChange}
-                                    handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.pass}/>
+            {/* CONFPASSWORD */}
+            <CustomFormControlPass error={errors.confPass} touched={touched.confPass} 
+                                  label='Confirmar contraseña' name='confPass'
+                                  placeholder='Ingrese nuevamente la contraseña' handleChange={handleChange}
+                                  handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.confPass}/>
 
-              {/* CONFPASSWORD */}
-              <CustomFormControlPass error={errors.confPass} touched={touched.confPass} 
-                                    label='Confirmar contraseña' name='confPass'
-                                    placeholder='Ingrese nuevamente la contraseña' handleChange={handleChange}
-                                    handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.confPass}/>
+            {/* TERMINOS */}
+            <FormControl isInvalid={errors.toc && touched.toc} display='flex' alignItems='center' gap={3}  mb={6}>
+              <Checkbox name="toc" onChange={handleChange} value={values.toc} isChecked={values.toc} isDisabled={isSubmitting}></Checkbox>
+              <Text>
+                He leído y acepto los <Link _hover={{textDecoration:'none',color:'#112132'}} textDecoration='none' onClick={(!isSubmitting) ? onOpen : null} color='#768798' as='a'>términos y condiciones</Link>
+                </Text>
+            </FormControl>
 
-              {/* TERMINOS */}
-              <FormControl isInvalid={errors.toc && touched.toc} display='flex' gap={3}  mb={6}>
-                <Checkbox name="toc" onChange={handleChange} value={values.toc} isChecked={values.toc} isDisabled={isSubmitting}></Checkbox>
-                <Text>
-                  He leído y acepto los 
-                  <Link textDecoration='none' onClick={(!isSubmitting) ? onOpen : null} color='#768798' as='a'>términos y condiciones</Link>
-                  </Text>
-              </FormControl>
+            <Box display='flex' justifyContent='center'>
+              <motion.div whileHover={{scale:1.1}} whileTap={{scale:0.9}}>
+                <Button type='submit' isLoading={isSubmitting} size='lg' 
+                        bg='#112132' color='#aaccee'
+                        _hover={{ bg:'#aaccee', color:'#112132'}}
+                        loadingText='Procesando'>Crear cuenta</Button>
 
-              <Box display='flex' justifyContent='center'>
-                <motion.div whileHover={{scale:1.1}} whileTap={{scale:0.9}}>
-                  <Button type='submit' isLoading={isSubmitting} size='lg' 
-                          bg='#112132' color='#aaccee'
-                          _hover={{ bg:'#aaccee', color:'#112132'}}
-                          loadingText='Procesando'>Crear cuenta</Button>
+              </motion.div>
+            </Box>
 
-                </motion.div>
-              </Box>
+          </form>
+        )}
+      </Formik>
 
-            </form>
-          )}
-        </Formik>
-
-        <TerminosModal isOpen={isOpen} onClose={onClose} />
-      </CardBody>
-    </Card>
+      <TerminosModal isOpen={isOpen} onClose={onClose} />
+      
     </>
   )
 }
