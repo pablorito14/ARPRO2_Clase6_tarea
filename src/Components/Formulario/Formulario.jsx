@@ -80,6 +80,7 @@ const Formulario = () => {
 
   const formSubmit = (values, {setSubmitting,resetForm}) => {
     setTimeout(() => {
+      values.email = values.email.toLowerCase();
       console.log(values);
       setSubmitted(false);
       
