@@ -123,7 +123,7 @@ const Formulario = () => {
 
   // validacion con YUP mediante schemas
   const passPattern = /^(?=.*[a-zA-Z])(?=.*\d)\S+$/;
-  const emailBasicPatter = /^[a-z]\S{2,}@\S{2,}\.\S{2,}$/;
+  const emailBasicPattern = /^[a-zA-Z0-9][a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 
   const registroSchema = object({
     nombre: string().trim()
@@ -133,7 +133,7 @@ const Formulario = () => {
             .matches(/^[a-zA-Z]{2,}/,'Por favor ingrese solo letras (al menos 2)')
             .required('Por favor ingrese su apellido'),
     email: string().trim().lowercase()
-            .matches(emailBasicPatter,'Por favor ingrese un correo valido')
+            .matches(emailBasicPattern,'Por favor ingrese un correo valido')
             .required('Por favor ingrese su correo'),
     tel: string().trim()
             .matches(/^\d{10}$/,'Ingrese código sin 0 y número sin 15')
