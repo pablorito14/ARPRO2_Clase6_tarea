@@ -6,6 +6,7 @@ import {Formik} from 'formik';
 import { ref, object, string, boolean} from 'yup';
 import { CustomFormControl } from "../CustomFormControl/CustomFormControl";
 import { CustomFormControlPass } from "../CustomFormControlPass/CustomFormControlPass";
+import { useState } from "react";
 
 const Lorem = ({count}) => {
   return (
@@ -75,10 +76,12 @@ const Formulario = () => {
   
   // funcion a ejecutar cuando se envia el formulario
   const {isOpen,onOpen,onClose} = useDisclosure();
+  const [submitted,setSubmitted] = useState(false)
 
   const formSubmit = (values, {setSubmitting,resetForm}) => {
     setTimeout(() => {
       console.log(values);
+      setSubmitted(false);
       
       toast({
         position: 'top',
@@ -107,6 +110,7 @@ const Formulario = () => {
                     setSubmitting(false);
                     toast.closeAll();
                     resetForm({values:formInitialValues})
+                    setSubmitted(true);
                   }}>Aceptar</Button>
 
               </Flex>
@@ -181,13 +185,13 @@ const Formulario = () => {
 
             {/* PASSWORD */}
             <CustomFormControlPass error={errors.pass} touched={touched.pass} 
-                                  label='Contraseña' name='pass'
+                                  label='Contraseña' name='pass' submitted={submitted}
                                   placeholder='Ingrese una contraseña' handleChange={handleChange}
                                   handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.pass}/>
 
             {/* CONFPASSWORD */}
             <CustomFormControlPass error={errors.confPass} touched={touched.confPass} 
-                                  label='Confirmar contraseña' name='confPass'
+                                  label='Confirmar contraseña' name='confPass' submitted={submitted}
                                   placeholder='Ingrese nuevamente la contraseña' handleChange={handleChange}
                                   handleBlur={handleBlur} isSubmitting={isSubmitting} value={values.confPass}/>
 

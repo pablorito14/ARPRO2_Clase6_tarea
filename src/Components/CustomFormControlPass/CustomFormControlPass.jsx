@@ -1,8 +1,18 @@
 import { Button, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { IoEye,IoEyeOff  } from "react-icons/io5";
 
-const CustomFormControlPass = ({error,touched,label,name,placeholder,handleChange,handleBlur,isSubmitting,value}) => {
+const CustomFormControlPass = ({error,touched,label,name,submitted,placeholder,handleChange,handleBlur,isSubmitting,value}) => {
+
+  useEffect(() => {
+
+    if(submitted){
+      setShow(false)
+    }
+
+  },[submitted])
+
   const [show,setShow] = useState(false);
   const mostrarPass = () => setShow(!show);
   
